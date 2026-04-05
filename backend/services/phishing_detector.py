@@ -1,12 +1,13 @@
-"""ML-based phishing URL detection service using heuristics and rule-based scoring."""
+"""ML-based phishing URL detection service using heuristics, rule-based scoring, and ensemble ML models."""
 
 import re
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 from urllib.parse import urlparse, parse_qs
+from .ml_classifier import MLClassifier
 
 
 class PhishingDetector:
-    """Heuristic-based phishing URL detector using feature extraction and scoring."""
+    """Hybrid phishing URL detector using heuristics, ML classification, and feature extraction."""
 
     SUSPICIOUS_TLDS = {
         ".tk", ".ml", ".ga", ".cf", ".gq", ".xyz", ".top", ".loan", ".zip", ".click",
@@ -25,7 +26,7 @@ class PhishingDetector:
     PORT_PATTERN = re.compile(r":\d{2,5}")
     SUBDOMAIN_PATTERN = re.compile(r"^[^.]+\.[^.]+\.[^.]+")
 
-    def __init__(self):
+    def __init__(self, use_ml: bool = True):
         self.weights = {
             "suspicious_tld": 25,
             "ip_address": 30,
@@ -39,8 +40,13 @@ class PhishingDetector:
             "excessive_query_params": 10,
             "brand_impersonation": 25,
         }
+        self.use_ml = use_ml
+        self.ml_classifier: Optional[MLClassifier] = None
+        if self.use_ml:
+            self.ml_classifier = MLClassifier()
 
     def extract_features(self, url: str) -> Dict:
+        """Extract heuristic features from URL for risk scoring."""
         features = {}
         parsed = urlparse(url)
         hostname = parsed.hostname or ""
@@ -57,11 +63,13 @@ class PhishingDetector:
         features["has_suspicious_port"] = bool(self.PORT_PATTERN.search(url))
         features["is_https"] = parsed.scheme == "https"
         features["query_param_count"] = len(parse_qs(query))
-        features["has_brand_keywords"] = any(brand in url.lower() for brand in ["paypal", "amazon", "microsoft", "apple", "google", "facebook"])
-
+        features["has_brand_keywords"] = any(
+            brand in url.lower() for brand in ["paypal", "amazon", "microsoft", "apple", "google", "facebook"]
+        )
         return features
 
     def calculate_risk_score(self, features: Dict) -> Tuple[int, List[str]]:
+        """Calculate heuristic risk score based on extracted features."""
         score = 0
         reasons = []
 
@@ -104,6 +112,7 @@ class PhishingDetector:
         return score, reasons
 
     def classify_risk(self, score: int) -> str:
+        """Classify risk level based on score."""
         if score >= 70:
             return "high"
         elif score >= 40:
@@ -113,20 +122,55 @@ class PhishingDetector:
         else:
             return "safe"
 
-    def detect(self, url: str) -> Dict:
+    def get_ml_prediction(self, url: str) -> Optional[Dict]:
+        """Get ML model prediction for URL."""
+        if not self.ml_classifier:
+            return None
+        try:
+            result = self.ml_classifier.predict_url(url)
+            return result
+        except Exception as e:
+            return {"error": str(e), "ml_available": False}
+
+    def detect(self, url: str, use_ml: bool = None) -> Dict:
+        """Detect phishing using hybrid heuristic + ML approach."""
+        use_ml = use_ml if use_ml is not None else self.use_ml
+
+        # Heuristic detection
         features = self.extract_features(url)
         score, reasons = self.calculate_risk_score(features)
         risk_level = self.classify_risk(score)
         is_phishing = risk_level in ["high", "medium"]
 
-        return {
+        result = {
             "url": url,
             "is_phishing": is_phishing,
             "risk_level": risk_level,
             "risk_score": score,
             "reasons": reasons,
             "features": features,
+            "detection_method": "heuristic",
         }
+
+        # ML detection
+        if use_ml and self.ml_classifier:
+            ml_result = self.get_ml_prediction(url)
+            if ml_result and "error" not in ml_result:
+                result["ml_prediction"] = ml_result
+                result["ml_confidence"] = ml_result.get("confidence", 0)
+                result["ml_is_phishing"] = ml_result.get("is_phishing", False)
+                # Combine heuristic and ML
+                if ml_result.get("is_phishing"):
+                    result["is_phishing"] = True
+                    if risk_level == "low":
+                        result["risk_level"] = "medium"
+                result["detection_method"] = "hybrid"
+
+        return result
+
+    def detect_batch(self, urls: List[str]) -> List[Dict]:
+        """Detect phishing for multiple URLs."""
+        return [self.detect(url) for url in urls]
 
 
 detector = PhishingDetector()
