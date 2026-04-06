@@ -68,10 +68,8 @@ class FileScanResult(BaseModel):
     is_malicious: bool
     risk_score: float
     threat_level: ThreatLevel
-    signatures_matched: List[str]
-    ml_prediction: Dict[str, Any]
-    explanation: List[str]
-    timestamp: datetime
+            virustotal: Dict[str, Any]
+        timestamp: datetime
 
 
 class FileScanResponse(BaseModel):
