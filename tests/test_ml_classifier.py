@@ -6,18 +6,18 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 
-from services.ml_classifier import MLClassifier
+from services.ml_classifier import MLPhishingClassifier
 
 
-class TestMLClassifier:
-    """Test suite for MLClassifier."""
+class TestMLPhishingClassifier:
+    """Test suite for MLPhishingClassifier."""
 
     @pytest.fixture
     def classifier(self):
-        return MLClassifier()
+        return MLPhishingClassifier()
 
     def test_classifier_initialization(self, classifier):
-        """Test MLClassifier initializes correctly."""
+        """Test MLPhishingClassifier initializes correctly."""
         assert classifier is not None
         assert hasattr(classifier, "models")
         assert hasattr(classifier, "feature_names")
@@ -140,7 +140,7 @@ class TestMLClassifier:
     def test_predict_url_with_ml_disabled(self):
         """Test behavior when ML is not available."""
         # Simulate ML unavailable by checking ML_AVAILABLE flag
-        classifier = MLClassifier()
+        classifier = MLPhishingClassifier()
         # The classifier should handle missing models gracefully
         result = classifier.predict_url("http://test.com")
         assert result is not None
@@ -153,7 +153,7 @@ class TestMLClassifier:
         assert save_path.exists()
 
         # Load into new classifier
-        new_classifier = MLClassifier()
+        new_classifier = MLPhishingClassifier()
         new_classifier.load(str(save_path))
         assert new_classifier.models is not None
 
