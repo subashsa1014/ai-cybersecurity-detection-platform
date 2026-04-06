@@ -190,7 +190,7 @@ class MLPhishingClassifier:
             'num_features': len(self.feature_names),
             'feature_names': self.feature_names
         }
-            def predict_url(self, url: str) -> Dict:
+             ef predict_url(self, url: str) -> Dict:
         """Predict if a URL is phishing using ML ensemble."""
         if not ML_AVAILABLE:
             return {'is_phishing': False, 'confidence': 0.0, 'error': 'ML not available'}
