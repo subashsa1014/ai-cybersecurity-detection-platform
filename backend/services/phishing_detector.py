@@ -3,7 +3,7 @@
 import re
 from typing import Dict, List, Tuple, Optional
 from urllib.parse import urlparse, parse_qs
-from .ml_classifier import MLClassifier
+from .ml_classifier import MLPhishingClassifier
 
 
 class PhishingDetector:
@@ -41,9 +41,9 @@ class PhishingDetector:
             "brand_impersonation": 25,
         }
         self.use_ml = use_ml
-        self.ml_classifier: Optional[MLClassifier] = None
+        self.ml_classifier: Optional[MLPhishingClassifier] = None
         if self.use_ml:
-            self.ml_classifier = MLClassifier()
+            self.ml_classifier = MLPhishingClassifier()
 
     def extract_features(self, url: str) -> Dict:
         """Extract heuristic features from URL for risk scoring."""
