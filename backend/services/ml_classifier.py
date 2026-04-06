@@ -163,8 +163,8 @@ class MLPhishingClassifier:
 
         with open(load_path, 'rb') as f:
             data = pickle.load(f)
-           def predict_url        def predict_url         self.models = data.get('models', {})
-            self.scaler = data.get('scaler', None)
+        self.models = data.get('models', {})
+        self.scaler = data.get('scaler', None)
 
     def get_feature_importance(self) -> Dict[str, List[float]]:
         """Get feature importance from all models."""
