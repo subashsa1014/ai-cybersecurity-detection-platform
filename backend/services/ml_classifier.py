@@ -1,6 +1,7 @@
 """ML-based phishing classifier using ensemble models."""
 
 import pickle
+import re
 import numpy as np
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
@@ -189,3 +190,30 @@ class MLPhishingClassifier:
             'num_features': len(self.feature_names),
             'feature_names': self.feature_names
         }
+            def predict_url(self, url: str) -> Dict:
+        """Predict if a URL is phishing using ML ensemble."""
+        if not ML_AVAILABLE:
+            return {'is_phishing': False, 'confidence': 0.0, 'error': 'ML not available'}
+        from urllib.parse import urlparse, parse_qs
+        parsed = urlparse(url)
+        heuristic = {
+            'url_length': len(url),
+            'num_dots': url.count('.'),
+            'num_hyphens': url.count('-'),
+            'num_underscores': url.count('_'),
+            'num_digits': sum(c.isdigit() for c in url),
+            'tld_length': len(url.split('.')[-1]) if '.' in url else 0,
+            'has_at_symbol': 1.0 if '@' in url else 0.0,
+            'has_ip_address': 1.0 if re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', parsed.netloc) else 0.0,
+            'url_depth': len(parsed.path.strip('/').split('/')) if parsed.path else 0,
+            'num_params': len(parse_qs(parsed.query)),
+            'has_suspicious_tld': 1.0 if url.split('.')[-1].lower() in {'tk', 'ml', 'ga', 'cf', 'gq', 'xyz', 'top', 'loan', 'zip', 'click', 'work', 'date', 'bid', 'gdn', 'stream', 'download'} else 0.0,
+            'has_phishing_keyword': 1.0 if any(kw in url.lower() for kw in {'login', 'signin', 'account', 'verify', 'secure', 'update', 'password', 'banking', 'paypal', 'apple', 'microsoft', 'amazon', 'google', 'facebook', 'suspended', 'urgent', 'confirm', 'alert', 'warning', 'locked'}) else 0.0,
+            'has_hex_encoded': 1.0 if re.search(r'%[0-9a-fA-F]{2}', url) else 0.0,
+            'avg_word_length': np.mean([len(w) for w in re.findall(r'[a-zA-Z]+', url)]) if re.findall(r'[a-zA-Z]+', url) else 0.0,
+            'entropy': 0.0,
+        }
+        features = self.extract_features(url, heuristic)
+        is_phishing, confidence, details = self.predict(features)
+        return {'is_phishing': is_phishing, 'confidence': float(confidence), 'details': details}
+
