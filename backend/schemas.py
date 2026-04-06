@@ -143,3 +143,15 @@ class APIStatusResponse(BaseModel):
 class ErrorResponse(BaseModel):
     detail: str
     path: str
+
+# --- Additional Authentication Schemas ---
+UserCreate = UserRegister  # Alias for backward compatibility
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    expires_in: int
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
+    exp: Optional[int] = None
