@@ -4,6 +4,19 @@ import hashlib
 import re
 from typing import Dict, List, Tuple
 from datetime import datetime, timezone
+from dataclasses import dataclass
+@dataclass
+class ScanResult:
+    """Result of a file scan."""
+    filename: str
+    is_safe: bool
+    threats: List[str]
+    risk_level: str
+    risk_score: int
+    hashes: Dict[str, str]
+    file_size: int
+    scanned_at: str
+
 
 
 class FileScanner:
@@ -164,6 +177,23 @@ class FileScanner:
             "file_size": len(file_content),
             "scanned_at": datetime.now(timezone.utc).isoformat(),
         }
+            def scan_file(self, filename: str, file_obj) -> ScanResult:
+        """Scan a file and return a ScanResult."""
+        content = file_obj.read()
+        if hasattr(file_obj, 'seek'):
+            file_obj.seek(0)
+        result = self.scan(filename, content)
+        return ScanResult(
+            filename=result["filename"],
+            is_safe=not result["is_malicious"],
+            threats=result["reasons"],
+            risk_level=result["risk_level"],
+            risk_score=result["risk_score"],
+            hashes=result["hashes"],
+            file_size=result["file_size"],
+            scanned_at=result["scanned_at"],
+        )
+
 
 
 scanner = FileScanner()
