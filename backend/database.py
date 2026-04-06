@@ -6,6 +6,7 @@ from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 import motor.motor_asyncio
 from config import settings
+AsyncMongoDBClient = motor.motor_asyncio.AsyncIOMotorClient
 
 # Motor async client for async operations
 mongodb_client: motor.motor_asyncio.AsyncIOMotorClient = None
@@ -95,3 +96,8 @@ def create_indexes():
         print("Database indexes created successfully")
     except Exception as e:
         print(f"Error creating indexes: {e}")
+        
+
+def get_db():
+    """Return the current MongoDB database instance."""
+    return database
