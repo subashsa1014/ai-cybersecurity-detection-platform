@@ -11,6 +11,7 @@ A comprehensive AI-powered system for detecting malware, identifying phishing UR
 - [Phases](#phases)
 - [Advanced Features](#advanced-features)
 - [Getting Help](#getting-help)
+- - [Demo Video](#demo-video)
 
 ## 🚀 Overview
 
@@ -205,6 +206,17 @@ By building this project, you'll demonstrate:
 - ✅ Professional software architecture
 
 💡 **This is exactly what companies like McAfee, CrowdStrike, and Palo Alto Networks look for!**
+
+## Demo Video
+
+Want to see the platform in action? We've prepared ready-to-read demo video scripts!
+
+- **Full Demo (~90s):** Perfect for GitHub README, YouTube, or portfolio
+- **LinkedIn Short (~30s):** Ideal for social media posts
+
+Check out the full scripts in [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md).
+
+---
 
 ## 🤝 Contributing
 
