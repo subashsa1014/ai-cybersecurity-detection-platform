@@ -17,8 +17,6 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 settings = get_settings()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password: str) -> str:
@@ -46,7 +44,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(token: str = Depends(OAuth2PasswordRequestForm(scopes=[])), db: AsyncMongoDBClient = Depends(get_db)):
+async def get_current_user(token: str = Depends(OAuth2PasswordRequestForm()), db: AsyncMongoDBClient = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
