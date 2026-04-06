@@ -19,3 +19,4 @@ motor
 httpx==0.26.0
 email-validator
 passlib
+fastapi-limiter==0.1.6
