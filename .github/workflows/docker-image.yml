@@ -27,7 +27,7 @@ jobs:
       - name: Run tests
         run: |
           cd backend
-          python -m pytest tests/ -v --tb=short
+          python -m pytest ../tests/ -v --tb=short
 
   build-and-push:
     runs-on: ubuntu-latest
