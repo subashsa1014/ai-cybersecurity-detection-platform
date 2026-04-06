@@ -163,7 +163,7 @@ class MLPhishingClassifier:
 
         with open(load_path, 'rb') as f:
             data = pickle.load(f)
-            self.models = data.get('models', {})
+           def predict_url        def predict_url         self.models = data.get('models', {})
             self.scaler = data.get('scaler', None)
 
     def get_feature_importance(self) -> Dict[str, List[float]]:
@@ -190,7 +190,7 @@ class MLPhishingClassifier:
             'num_features': len(self.feature_names),
             'feature_names': self.feature_names
         }
-             def predict_url(self, url: str) -> Dict:
+            def  predict_url(self, url: str) -> Dict:
         """Predict if a URL is phishing using ML ensemble."""
         if not ML_AVAILABLE:
             return {'is_phishing': False, 'confidence': 0.0, 'error': 'ML not available'}
