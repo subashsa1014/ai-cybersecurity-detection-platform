@@ -177,7 +177,7 @@ class FileScanner:
             "file_size": len(file_content),
             "scanned_at": datetime.now(timezone.utc).isoformat(),
         }
-            def scan_file(self, filename: str, file_obj) -> ScanResult:
+                def scan_file(self, filename: str, file_obj) -> ScanResult:
         """Scan a file and return a ScanResult."""
         content = file_obj.read()
         if hasattr(file_obj, 'seek'):
